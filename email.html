@@ -1,0 +1,27 @@
+<html>
+  <head></head>
+  <body style="position: relative; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif">
+    <div style="background-color: #17a2b8; padding: 40px; text-align: center; color: #fff">
+      <h1>Thank you for registering on myFridge</h1>
+      <div style="height: 5px; background-color: #fff"></div>
+    </div>
+    <div style="padding: 50px 0 100px 0; text-align: center;">
+      <h2>Dear ${fName} ${lName}, your verification code is</h2>
+      <span style="display: inline-block; padding: 15px 20px; border: 1px solid #c7c7c7; font-family: 'Courier New', Courier, monospace;">
+        <b>${verification_code}</b>
+      </span>
+      <br />
+      <br />
+      <span>
+        Click here to verify:
+         <a href="http://localhost:3000/register_verification"
+        target="_blank">http://localhost:3000/register_verification
+        </a>
+      </span>
+    </div>
+    <div style="position: absolute; width: calc(100% - 40px); bottom: 0; background-color: #17a2b8; padding: 20px; text-align: center;">
+      myFridge.com NoCopyright Ⓒ Fábián Dániel | Fogas
+      Arnold
+    </div>
+  </body>
+</html>
