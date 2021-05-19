@@ -1,7 +1,15 @@
 const jwt = require("jsonwebtoken");
 
 const verifyJWT = (req, res, next) => {
-  const token = req.headers["x-access-token"];
+  let token = "";
+  let refreshToken = "";
+  try {
+    token = req.headers["x-access-token"];
+    refreshToken = req.session.user.refreshToken;
+  } catch (error) {
+    console.log(error.message);
+    return res.json({ err: "There is no tokens..." });
+  }
 
   if (!token) {
     return res.json({ err: "There is no token..." });
@@ -9,7 +17,6 @@ const verifyJWT = (req, res, next) => {
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
         console.log(err.message);
-        const refreshToken = req.session.user.refreshToken;
         if (!refreshToken) {
           return res.json({ err: "There is no refresh token..." });
         } else {

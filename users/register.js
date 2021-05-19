@@ -8,9 +8,11 @@ const register = (usersRouter, pool) => {
   usersRouter.post("/register", (req, res) => {
     const { fName, lName, password, email, tel, reToken } = req.body;
 
-    const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const emailReg =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const validEmail = emailReg.test(String(email).toLowerCase());
-    const passwordReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
+    const passwordReg =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
     const validPassword = passwordReg.test(password);
 
     const validateHuman = async () => {
@@ -24,7 +26,7 @@ const register = (usersRouter, pool) => {
         })
         .catch((err) => {
           console.log(err.message);
-          res.json({ err: err.message });
+          return res.json({ err: err.message });
           validate = false;
         });
 
@@ -39,11 +41,11 @@ const register = (usersRouter, pool) => {
       return res.json({ err: "Not valid email!" });
     } else if (!validPassword) {
       return res.json({
-        err:
-          "The password must be 8 characters long and must contain at least 1 lowercase, 1 uppercase, 1 numeric and 1 special character",
+        err: "The password must be 8 characters long and must contain at least 1 lowercase, 1 uppercase, 1 numeric and 1 special character",
       });
     } else {
-      const CHECK_USER_IS_EXIST = "SELECT * FROM users WHERE u_email = ?";
+      const CHECK_USER_IS_EXIST =
+        "SELECT * FROM users WHERE u_email = ? AND u_is_deleted = 0";
       pool.query(CHECK_USER_IS_EXIST, email, (err, result) => {
         if (err) {
           console.log(err.message);
@@ -83,11 +85,11 @@ const register = (usersRouter, pool) => {
                   if (register_err) {
                     console.log(register_err.message);
                     return res.json({
-                      err: "Something wong during registration.",
+                      err: "Something went wrong during registration.",
                     });
                   } else if (!register_result.affectedRows) {
                     return res.json({
-                      err: "Something wong during registration.",
+                      err: "Something went wrong during registration.",
                     });
                   } else {
                     sendEmailCode(

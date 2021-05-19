@@ -8,7 +8,7 @@ const app = express();
 
 require("dotenv").config();
 
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
 app.use(
   cors({
     origin: process.env.APP_HOST,
@@ -37,6 +37,8 @@ app.get("/", (req, res) => {
 //Routes
 const { usersRouter } = require("./routes/users.js");
 app.use("/users", usersRouter);
+const { recipesRouter } = require("./routes/recipes.js");
+app.use("/recipes", recipesRouter);
 
 const { testRouter } = require("./routes/test.js");
 app.use("/test", testRouter);

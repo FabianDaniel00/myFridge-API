@@ -46,7 +46,7 @@ const login = (usersRouter, pool) => {
 
                 req.session.user = {
                   data: result[0],
-                  refreshToken: refreshToken,
+                  refreshToken,
                 };
 
                 console.log(`Logged in: ${email}`);

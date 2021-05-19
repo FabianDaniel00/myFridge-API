@@ -18,8 +18,7 @@ const sendEmailCode = (
   });
 
   let registerVerificationLink = "http://localhost:3000/register_verification";
-  let resetVerificationLink =
-    "http://localhost:3000/password_reset_verification";
+  let resetVerificationLink = "http://localhost:3000/reset_password";
 
   if (isVerification) {
     resetVerificationLink = "";
@@ -30,13 +29,21 @@ const sendEmailCode = (
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
-    subject: "Confirm myFridge registration",
+    subject: `${
+      isVerification
+        ? "Confirm myFridge registration"
+        : "Reset password on myFridge"
+    }`,
     html: `
       <html>
         <head></head>
         <body style="position: relative; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif">
           <div style="background-color: #17a2b8; padding: 40px; text-align: center; color: #fff">
-            <h1>Thank you for registering on myFridge</h1>
+            <h1>${
+              isVerification
+                ? "Thank you for registering on myFridge!"
+                : "Password reset verification!"
+            }</h1>
             <div style="height: 5px; background-color: #fff"></div>
           </div>
           <div style="padding: 50px 0 100px 0; text-align: center;">

@@ -2,6 +2,7 @@ const {
   isUserAuthorized,
 } = require("../users/authentication/isUserAuthorized.js");
 const { register } = require("../users/register.js");
+const { registerVerification } = require("../users/registerVerification.js");
 const { sendCodeAgain } = require("../users/sendCodeAgain.js");
 const { login } = require("../users/login.js");
 const { logout } = require("../users/logout.js");
@@ -14,6 +15,7 @@ const usersRouter = express.Router();
 
 isUserAuthorized(usersRouter);
 register(usersRouter, pool);
+registerVerification(usersRouter, pool);
 sendCodeAgain(usersRouter, pool);
 login(usersRouter, pool);
 logout(usersRouter);
