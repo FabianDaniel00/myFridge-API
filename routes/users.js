@@ -8,7 +8,13 @@ const { login } = require("../users/login.js");
 const { logout } = require("../users/logout.js");
 const { resetPasswordSend } = require("../users/resetPasswordSend.js");
 const { resetPasswordConfirm } = require("../users/resetPasswordConfirm.js");
+const { changeFName } = require("../users/changeFName.js");
+const { changeLName } = require("../users/changeLName.js");
+const { changeEmail } = require("../users/changeEmail.js");
+const { changeTel } = require("../users/changeTel.js");
+const { changePassword } = require("../users/changePassword.js");
 const { pool } = require("../db-config");
+const { verifyJWT } = require("./verifyJWT.js");
 
 const express = require("express");
 const usersRouter = express.Router();
@@ -21,5 +27,10 @@ login(usersRouter, pool);
 logout(usersRouter);
 resetPasswordSend(usersRouter, pool);
 resetPasswordConfirm(usersRouter, pool);
+changeFName(usersRouter, pool, verifyJWT);
+changeLName(usersRouter, pool, verifyJWT);
+changeEmail(usersRouter, pool, verifyJWT);
+changeTel(usersRouter, pool, verifyJWT);
+changePassword(usersRouter, pool, verifyJWT);
 
 exports.usersRouter = usersRouter;

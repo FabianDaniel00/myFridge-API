@@ -1,12 +1,15 @@
 const getRecipes = (recipesRouter, pool) => {
-  recipesRouter.get("/:page", (req, res) => {
-    const { page } = req.params;
+  recipesRouter.get("/:category/:page/:search", (req, res) => {
+    const { category, page, search } = req.params;
 
-    if (!page || isNaN(parseInt(page))) {
-      return res.json({ err: "Select a page for get the recipes!" });
+    if (!page || isNaN(parseInt(page)) || !category || !search) {
+      return res.json({ err: "Not corresponding data!" });
     } else {
-      const GET_RECIPES_COUNT =
-        "SELECT COUNT(r_id) AS recipes_count FROM recipes WHERE recipes.r_accepted = 1 AND recipes.r_deleted = 0";
+      const GET_RECIPES_COUNT = `SELECT COUNT(r_id) AS recipes_count FROM recipes WHERE recipes.r_accepted = 1 AND recipes.r_deleted = 0 ${
+        category === `all` ? `` : `AND recipes.r_cat_id = ` + category
+      } ${
+        search === `all` ? `` : `AND recipes.r_name LIKE '%` + search + `%'`
+      }`;
 
       pool.query(GET_RECIPES_COUNT, async (err, result) => {
         if (err) {
@@ -25,7 +28,6 @@ const getRecipes = (recipesRouter, pool) => {
               recipes.r_name,
               recipes.r_pic,
               recipes.r_description,
-              recipes.r_accepted,
               recipes.r_created_at,
               users.u_f_name,
               users.u_l_name,
@@ -59,13 +61,25 @@ const getRecipes = (recipesRouter, pool) => {
             INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
             WHERE
                 recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
-        ) AS ratings_count
+        ) AS ratings_count,
+        (
+          SELECT
+              COUNT(DISTINCT fav_recipes.r_id)
+          FROM
+              fav_recipes
+          WHERE
+              r_id = recipe_id AND u_id = ? AND is_favorite = 1
+        ) AS is_favorite
           FROM
               recipes
           INNER JOIN users ON users.u_id = recipes.u_id
           INNER JOIN r_categories ON r_categories.r_cat_id = recipes.r_cat_id
           WHERE
-              recipes.r_accepted = 1 AND recipes.r_deleted = 0
+              recipes.r_accepted = 1 AND recipes.r_deleted = 0 ${
+                category === `all` ? `` : `AND recipes.r_cat_id = ` + category
+              } ${
+            search === `all` ? `` : `AND recipes.r_name LIKE '%` + search + `%'`
+          }
           ORDER BY
               rating
           DESC
@@ -74,7 +88,11 @@ const getRecipes = (recipesRouter, pool) => {
 
           await pool.query(
             GET_RECIPES_BY_PAGE,
-            [10, (page - 1) * 10],
+            [
+              req.session.user ? req.session.user.data.u_id : 0,
+              10,
+              (page - 1) * 10,
+            ],
             (byPageErr, byPageResult) => {
               if (byPageErr) {
                 console.log(byPageErr.message);
@@ -83,7 +101,9 @@ const getRecipes = (recipesRouter, pool) => {
                 });
               } else if (!byPageResult.length) {
                 return res.json({
-                  err: "There is no data in database on this page!",
+                  err: `There is no data in database on this page${
+                    category !== "all" ? ` and in this category` : ""
+                  }${search !== "all" ? ` and with this search` : ""}!`,
                 });
               } else {
                 for (const recipe of byPageResult) {

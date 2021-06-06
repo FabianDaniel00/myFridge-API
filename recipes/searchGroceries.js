@@ -1,5 +1,5 @@
 const searchGroceries = (recipesRouter, pool, verifyJWT) => {
-  recipesRouter.get("/search_groceries/:input", verifyJWT, (req, res) => {
+  recipesRouter.get("/r/r/search_groceries/:input", verifyJWT, (req, res) => {
     const user = req.session.user;
     if (user) {
       if (req.u_id === user.data.u_id) {

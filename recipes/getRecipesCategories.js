@@ -1,31 +1,20 @@
-const getRecipesCategories = (recipesRouter, pool, verifyJWT) => {
-  recipesRouter.get("/get/recipes_categories", verifyJWT, (req, res) => {
-    const user = req.session.user;
-    if (user) {
-      if (req.u_id === user.data.u_id) {
-        const newToken = req.newToken;
+const getRecipesCategories = (recipesRouter, pool) => {
+  recipesRouter.get("/r/r/get/recipes_categories", (req, res) => {
+    const GET_RECIPES_CATEGORIES = "SELECT * FROM r_categories";
 
-        const GET_RECIPES_CATEGORIES = `
-            SELECT
-                r_cat_id, r_cat_name
-            FROM
-                r_categories
-          `;
-
-        pool.query(GET_RECIPES_CATEGORIES, (err, result) => {
-          if (err) {
-            console.log(err.message);
-            return res.json({ err: "Something went wrong." });
-          } else {
-            return res.json({ result, newToken });
-          }
-        });
+    pool.query(GET_RECIPES_CATEGORIES, (err, result) => {
+      if (err) {
+        console.log(err.message);
+        return res.json({ err: "Something went wrong." });
       } else {
-        return res.json({ err: "Something went wrong during authentication." });
+        for (const recipeCategory of result) {
+          const buf = new Buffer.from(recipeCategory.r_cat_image);
+          recipeCategory.r_cat_image = buf.toString("base64");
+        }
+
+        return res.json({ result });
       }
-    } else {
-      return res.json({ err: "There is no user signed in." });
-    }
+    });
   });
 };
 

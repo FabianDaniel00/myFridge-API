@@ -1,5 +1,5 @@
 const getRatingData = (recipesRouter, pool) => {
-  recipesRouter.get("/rating_data/:r_id", (req, res) => {
+  recipesRouter.get("/r/r/rating_data/:r_id", (req, res) => {
     const { r_id } = req.params;
 
     if (!r_id) {

@@ -14,6 +14,8 @@ const register = (usersRouter, pool) => {
     const passwordReg =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
     const validPassword = passwordReg.test(password);
+    const validPhone =
+      /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im.test(tel);
 
     const validateHuman = async () => {
       let validate = false;
@@ -27,7 +29,6 @@ const register = (usersRouter, pool) => {
         .catch((err) => {
           console.log(err.message);
           return res.json({ err: err.message });
-          validate = false;
         });
 
       return validate;
@@ -39,6 +40,8 @@ const register = (usersRouter, pool) => {
       return res.json({ err: "Can not be empty data!" });
     } else if (!validEmail) {
       return res.json({ err: "Not valid email!" });
+    } else if (!validPhone) {
+      return res.json({ err: "Not valid phone!" });
     } else if (!validPassword) {
       return res.json({
         err: "The password must be 8 characters long and must contain at least 1 lowercase, 1 uppercase, 1 numeric and 1 special character",
