@@ -9,12 +9,14 @@ const addComment = (recipesRouter, pool, verifyJWT) => {
         const { comment, r_comment_id, r_id, u_id } = req.body;
 
         const CHECK_IS_COMMENTED =
-          "SELECT r_comment_id FROM r_comments WHERE r_id = ? AND u_id = ? AND r_comment_deleted = 0;";
+          "SELECT r_comment_id FROM r_comments WHERE r_id = ? AND u_id = ? AND r_comment_deleted = 0 AND r_comment_accepted != -1;";
         pool.query(CHECK_IS_COMMENTED, [r_id, u_id], (cErr, cResult) => {
           if (cErr) {
             console.log(cErr.message);
           } else if (cResult.length) {
-            return res.json({ err: "You already commented on this recipe!" });
+            return res.json({
+              err: "You already commented on this recipe! If you don't see your comment please wait for admin to accept it.",
+            });
           } else {
             if (!comment || !r_comment_id || !r_id || !u_id) {
               return res.json({ err: "Can not be empty data!" });
@@ -40,7 +42,8 @@ const addComment = (recipesRouter, pool, verifyJWT) => {
                     return res.json({ err: "Something went wrong." });
                   } else {
                     return res.json({
-                      message: "Comment submitted.",
+                      message:
+                        "Comment submitted, please wait to admin to accept it.",
                       newToken,
                     });
                   }

@@ -90,7 +90,7 @@ const getRecipe = (recipesRouter, pool) => {
                   r_comments
               INNER JOIN users ON users.u_id = r_comments.u_id
               WHERE
-                  r_comments.r_id = ? AND r_comment_deleted = 0
+                  r_comments.r_id = ? AND r_comment_deleted = 0 AND r_comment_accepted = 1
               ORDER BY r_comment_created_at DESC;
           `;
 

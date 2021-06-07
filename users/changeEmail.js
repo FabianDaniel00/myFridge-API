@@ -9,8 +9,14 @@ const changeEmail = (usersRouter, pool, verifyJWT) => {
 
         const { email, emailPassword } = req.body;
 
+        const emailReg =
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const validEmail = emailReg.test(String(email).toLowerCase());
+
         if (!email || !emailPassword) {
           return res.json({ err: "Please fill out all the fields!" });
+        } else if (!validEmail) {
+          return res.json({ err: "Not valid email!" });
         } else {
           const CHECK_EMAIL_IS_EXIST =
             "SELECT u_id FROM users WHERE u_email = ?";

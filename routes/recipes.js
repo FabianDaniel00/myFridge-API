@@ -12,11 +12,13 @@ const { myFridge } = require("../recipes/myFridge.js");
 const { getGroceries } = require("../recipes/getGroceries.js");
 const { getFavoriteRecipes } = require("../recipes/getFavoriteRecipes.js");
 const { favoriteRecipe } = require("../recipes/favoriteRecipe.js");
+const { getMenu } = require("../recipes/getMenu.js");
+const { removeFromWeeklyMenu } = require("../recipes/removeFromWeeklyMenu.js");
+const { addToWeeklyMenu } = require("../recipes/addToWeeklyMenu.js");
 const { pool } = require("../db-config");
 const { verifyJWT } = require("./verifyJWT.js");
 
 const express = require("express");
-
 const recipesRouter = express.Router();
 
 getRecipes(recipesRouter, pool);
@@ -33,5 +35,8 @@ myFridge(recipesRouter, pool, verifyJWT);
 getGroceries(recipesRouter, pool, verifyJWT);
 getFavoriteRecipes(recipesRouter, pool, verifyJWT);
 favoriteRecipe(recipesRouter, pool, verifyJWT);
+getMenu(recipesRouter, pool, verifyJWT);
+removeFromWeeklyMenu(recipesRouter, pool, verifyJWT);
+addToWeeklyMenu(recipesRouter, pool, verifyJWT);
 
 exports.recipesRouter = recipesRouter;

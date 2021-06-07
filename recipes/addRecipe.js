@@ -52,7 +52,7 @@ const addRecipe = (recipesRouter, pool, verifyJWT) => {
               r_name,
               buffer,
               r_description,
-              0,
+              -1,
               r_cat_id,
               user.data.u_id,
               0,
