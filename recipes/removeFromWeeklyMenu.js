@@ -5,22 +5,27 @@ const removeFromWeeklyMenu = (usersRouter, pool, verifyJWT) => {
       if (req.u_id === user.data.u_id) {
         const newToken = req.newToken;
 
-        const { m_id } = req.body;
+        const { r_id, day } = req.body;
 
-        if (!m_id) {
-          return res.json({ err: "m_is is missing..." });
+        if (!r_id || !day) {
+          return res.json({ err: "Missing parameters..." });
         } else {
-          const REMOVE_FROM_WEEKLY_MENU = "DELETE FROM menus WHERE m_id = ?;";
-          pool.query(REMOVE_FROM_WEEKLY_MENU, m_id, (err, result) => {
-            if (err) {
-              console.log(err.message);
-              return res.json({ err: "Something went wrong." });
-            } else if (!result.affectedRows) {
-              return res.json({ err: "Something went wrong." });
-            } else {
-              return res.json({ removed: true, newToken });
+          const REMOVE_FROM_WEEKLY_MENU =
+            "UPDATE menus SET is_active = 0 WHERE u_id = ? AND day = ? AND r_id = ?;";
+          pool.query(
+            REMOVE_FROM_WEEKLY_MENU,
+            [user.data.u_id, day, r_id],
+            (err, result) => {
+              if (err) {
+                console.log(err.message);
+                return res.json({ err: "Something went wrong." });
+              } else if (!result.affectedRows) {
+                return res.json({ err: "Something went wrong." });
+              } else {
+                return res.json({ removed: true, newToken });
+              }
             }
-          });
+          );
         }
       } else {
         return res.json({ err: "Something went wrong during authentication." });

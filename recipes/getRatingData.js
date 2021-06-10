@@ -14,7 +14,7 @@ const getRatingData = (recipesRouter, pool) => {
                     recipes
                 INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
                 WHERE
-                    recipes.r_id = ? AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
+                    recipes.r_id = ?
             ) AS rating,
             (
                 SELECT
@@ -23,12 +23,12 @@ const getRatingData = (recipesRouter, pool) => {
                     recipes
                 INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
                 WHERE
-                    recipes.r_id = ? AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
+                    recipes.r_id = ?
             ) AS ratings_count
             FROM
                 recipes
             WHERE
-                recipes.r_id = ? AND recipes.r_accepted = 1 AND recipes.r_deleted = 0;
+                recipes.r_id = ?;
       `;
 
       pool.query(GET_RATING_DATA, [r_id, r_id, r_id], (err, result) => {

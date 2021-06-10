@@ -8,7 +8,8 @@ const login = (usersRouter, pool) => {
     if (!email || !password) {
       return res.json({ err: "Can not be empty data!" });
     } else {
-      const LOGIN_QUERY = "SELECT * FROM users WHERE u_email = ?";
+      const LOGIN_QUERY =
+        "SELECT * FROM users WHERE u_email = ? AND u_is_deleted = 0";
 
       pool.query(LOGIN_QUERY, email, (err, result) => {
         if (err) {
@@ -30,14 +31,14 @@ const login = (usersRouter, pool) => {
                 return res.json({ err: "You are blocked!" });
               } else {
                 const refreshToken = jwt.sign(
-                  { u_id: result[0].u_id },
+                  { u_id: result[0].u_id, u_is_admin: result[0].u_is_admin },
                   process.env.JWT_REFRESH,
                   {
                     expiresIn: 60 * 60 * 24,
                   }
                 );
                 const token = jwt.sign(
-                  { u_id: result[0].u_id },
+                  { u_id: result[0].u_id, u_is_admin: result[0].u_is_admin },
                   process.env.JWT_SECRET,
                   {
                     expiresIn: 300,

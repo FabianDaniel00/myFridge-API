@@ -31,40 +31,40 @@ const myFridge = (recipesRouter, pool, verifyJWT) => {
 
             for (const containGrocery of containGroceries) {
               groceriesToContainQuery += `
-            AND EXISTS(
-                SELECT
-                    ingredients.g_id
-                FROM
-                    ingredients
-                WHERE
-                    ingredients.r_id = recipes.r_id AND ingredients.g_id = ${containGrocery}
-            )
-            `;
+                AND EXISTS(
+                    SELECT
+                        ingredients.g_id
+                    FROM
+                        ingredients
+                    WHERE
+                        ingredients.r_id = recipes.r_id AND ingredients.g_id = ${containGrocery}
+                )
+              `;
             }
 
             for (const notContainGrocery of notContainGroceries) {
               groceriesToNotContainQuery += `
-            AND NOT EXISTS(
-                SELECT
-                    ingredients.g_id
-                FROM
-                    ingredients
-                WHERE
-                    ingredients.r_id = recipes.r_id AND ingredients.g_id = ${notContainGrocery}
-            )
-            `;
+                AND NOT EXISTS(
+                    SELECT
+                        ingredients.g_id
+                    FROM
+                        ingredients
+                    WHERE
+                        ingredients.r_id = recipes.r_id AND ingredients.g_id = ${notContainGrocery}
+                )
+              `;
             }
 
             const GET_RECIPES_COUNT = `
-          SELECT
-              COUNT(recipes.r_id) AS recipes_count
-          FROM
-              recipes
-          WHERE
-              recipes.r_accepted = 1 AND recipes.r_deleted = 0
-              ${groceriesToContainQuery}
-              ${groceriesToNotContainQuery};
-          `;
+              SELECT
+                  COUNT(recipes.r_id) AS recipes_count
+              FROM
+                  recipes
+              WHERE
+                  recipes.r_accepted = 1 AND recipes.r_deleted = 0
+                  ${groceriesToContainQuery}
+                  ${groceriesToNotContainQuery};
+            `;
 
             pool.query(GET_RECIPES_COUNT, async (err, result) => {
               if (err) {
@@ -78,59 +78,59 @@ const myFridge = (recipesRouter, pool, verifyJWT) => {
                 });
               } else {
                 const GET_RECIPES_BY_PAGE = `
-          SELECT
-              recipes.r_id AS recipe_id,
-              recipes.r_name,
-              recipes.r_pic,
-              recipes.r_description,
-              recipes.r_accepted,
-              recipes.r_created_at,
-              users.u_f_name,
-              users.u_l_name,
-              r_categories.r_cat_name,
-              (
-              SELECT
-                  SUM(
-                      groceries.g_price * ingredients.g_quantity
-                  )
-              FROM
-                  recipes
-              INNER JOIN ingredients ON ingredients.r_id = recipes.r_id
-              INNER JOIN groceries ON groceries.g_id = ingredients.g_id
-              WHERE
-                  recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
-          ) AS price,
-          (
-            SELECT
-                AVG(r_ratings.rating)
-            FROM
-                recipes
-            INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
-            WHERE
-                recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
-        ) AS rating,
-        (
-            SELECT
-                COUNT(r_ratings.r_id)
-            FROM
-                recipes
-            INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
-            WHERE
-                recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
-        ) AS ratings_count
-          FROM
-              recipes
-          INNER JOIN users ON users.u_id = recipes.u_id
-          INNER JOIN r_categories ON r_categories.r_cat_id = recipes.r_cat_id
-          WHERE
-              recipes.r_accepted = 1 AND recipes.r_deleted = 0
-              ${groceriesToContainQuery}
-              ${groceriesToNotContainQuery}
-          ORDER BY
-              rating
-          DESC
-          LIMIT ? OFFSET ?;
-      `;
+                  SELECT
+                      recipes.r_id AS recipe_id,
+                      recipes.r_name,
+                      recipes.r_pic,
+                      recipes.r_description,
+                      recipes.r_accepted,
+                      recipes.r_created_at,
+                      users.u_f_name,
+                      users.u_l_name,
+                      r_categories.r_cat_name,
+                      (
+                      SELECT
+                          SUM(
+                              groceries.g_price * IF(groceries.g_quantity_type = 'g', ingredients.g_quantity / 1000, ingredients.g_quantity)
+                          )
+                      FROM
+                          recipes
+                      INNER JOIN ingredients ON ingredients.r_id = recipes.r_id
+                      INNER JOIN groceries ON groceries.g_id = ingredients.g_id
+                      WHERE
+                          recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
+                      ) AS price,
+                      (
+                        SELECT
+                            AVG(r_ratings.rating)
+                        FROM
+                            recipes
+                        INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
+                        WHERE
+                            recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
+                    ) AS rating,
+                    (
+                        SELECT
+                            COUNT(r_ratings.r_id)
+                        FROM
+                            recipes
+                        INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
+                        WHERE
+                            recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
+                    ) AS ratings_count
+                      FROM
+                          recipes
+                      INNER JOIN users ON users.u_id = recipes.u_id
+                      INNER JOIN r_categories ON r_categories.r_cat_id = recipes.r_cat_id
+                      WHERE
+                          recipes.r_accepted = 1 AND recipes.r_deleted = 0
+                          ${groceriesToContainQuery}
+                          ${groceriesToNotContainQuery}
+                      ORDER BY
+                          rating
+                      DESC
+                      LIMIT ? OFFSET ?;
+                `;
 
                 await pool.query(
                   GET_RECIPES_BY_PAGE,

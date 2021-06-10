@@ -7,6 +7,7 @@ const getRecipe = (recipesRouter, pool) => {
     } else {
       const GET_RECIPE = `
           SELECT
+                recipes.r_id,
                 recipes.r_name,
                 recipes.r_pic,
                 recipes.r_description,
@@ -15,17 +16,19 @@ const getRecipe = (recipesRouter, pool) => {
                 users.u_l_name,
                 users.u_monogram,
                 recipes.r_created_at,
+                recipes.r_accepted,
+                users.u_email,
                 (
                 SELECT
                     SUM(
-                        groceries.g_price * ingredients.g_quantity
+                        groceries.g_price * IF(groceries.g_quantity_type = 'g', ingredients.g_quantity / 1000, ingredients.g_quantity)
                     )
                 FROM
                     recipes
                 INNER JOIN ingredients ON ingredients.r_id = recipes.r_id
                 INNER JOIN groceries ON groceries.g_id = ingredients.g_id
                 WHERE
-                    recipes.r_id = ? AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
+                    recipes.r_id = ? AND recipes.r_deleted = 0
             ) AS price,
             (
               SELECT
@@ -40,7 +43,7 @@ const getRecipe = (recipesRouter, pool) => {
             INNER JOIN r_categories ON r_categories.r_cat_id = recipes.r_cat_id
             INNER JOIN users ON users.u_id = recipes.u_id
             WHERE
-                recipes.r_id = ? AND recipes.r_accepted = 1 AND recipes.r_deleted = 0;
+                recipes.r_id = ?;
       `;
 
       pool.query(
@@ -60,7 +63,7 @@ const getRecipe = (recipesRouter, pool) => {
               ingredients.g_quantity,
               groceries.g_quantity_type,
               (
-                  groceries.g_price * ingredients.g_quantity
+                  groceries.g_price * IF(groceries.g_quantity_type = 'g', ingredients.g_quantity / 1000, ingredients.g_quantity)
               ) AS i_price
           FROM
               ingredients
@@ -77,22 +80,22 @@ const getRecipe = (recipesRouter, pool) => {
                 return res.json({ err: "Something went wrong!" });
               } else {
                 const GET_COMMENTS = `
-              SELECT
-                  r_comments.r_comment_id,
-                  r_comments.r_comment,
-                  r_comments.u_id,
-                  users.u_f_name,
-                  users.u_l_name,
-                  users.u_monogram,
-                  r_comments.r_comment_created_at,
-                  r_comments.r_comment_modified_at
-              FROM
-                  r_comments
-              INNER JOIN users ON users.u_id = r_comments.u_id
-              WHERE
-                  r_comments.r_id = ? AND r_comment_deleted = 0 AND r_comment_accepted = 1
-              ORDER BY r_comment_created_at DESC;
-          `;
+                  SELECT
+                      r_comments.r_comment_id,
+                      r_comments.r_comment,
+                      r_comments.u_id,
+                      users.u_f_name,
+                      users.u_l_name,
+                      users.u_monogram,
+                      r_comments.r_comment_created_at,
+                      r_comments.r_comment_modified_at
+                  FROM
+                      r_comments
+                  INNER JOIN users ON users.u_id = r_comments.u_id
+                  WHERE
+                      r_comments.r_id = ? AND r_comment_deleted = 0 AND r_comment_accepted = 1
+                  ORDER BY r_comment_created_at DESC;
+                `;
 
                 pool.query(GET_COMMENTS, r_id, (cErr, cResult) => {
                   if (cErr) {

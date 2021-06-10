@@ -39,6 +39,7 @@ const verifyJWT = (req, res, next) => {
                   );
                   req.newToken = newToken;
                   req.u_id = refreshDecoded.u_id;
+                  req.u_is_admin = refreshDecoded.u_is_admin;
                   return next();
                 } else {
                   return res.json({
@@ -52,6 +53,7 @@ const verifyJWT = (req, res, next) => {
       } else {
         req.newToken = "";
         req.u_id = decoded.u_id;
+        req.u_is_admin = decoded.u_is_admin;
         return next();
       }
     });

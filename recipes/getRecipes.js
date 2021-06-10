@@ -35,7 +35,7 @@ const getRecipes = (recipesRouter, pool) => {
               (
               SELECT
                   SUM(
-                      groceries.g_price * ingredients.g_quantity
+                      groceries.g_price * IF(groceries.g_quantity_type = 'g', ingredients.g_quantity / 1000, ingredients.g_quantity)
                   )
               FROM
                   recipes
@@ -52,24 +52,24 @@ const getRecipes = (recipesRouter, pool) => {
             INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
             WHERE
                 recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
-        ) AS rating,
-        (
+          ) AS rating,
+          (
+              SELECT
+                  COUNT(r_ratings.r_id)
+              FROM
+                  recipes
+              INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
+              WHERE
+                  recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
+          ) AS ratings_count,
+          (
             SELECT
-                COUNT(r_ratings.r_id)
+                COUNT(DISTINCT fav_recipes.r_id)
             FROM
-                recipes
-            INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
+                fav_recipes
             WHERE
-                recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
-        ) AS ratings_count,
-        (
-          SELECT
-              COUNT(DISTINCT fav_recipes.r_id)
-          FROM
-              fav_recipes
-          WHERE
-              r_id = recipe_id AND u_id = ? AND is_favorite = 1
-        ) AS is_favorite
+                r_id = recipe_id AND u_id = ? AND is_favorite = 1
+          ) AS is_favorite
           FROM
               recipes
           INNER JOIN users ON users.u_id = recipes.u_id

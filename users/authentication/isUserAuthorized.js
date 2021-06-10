@@ -15,7 +15,7 @@ const isUserAuthorized = (usersRouter) => {
           });
         } else if (user.data.u_id === decoded.u_id) {
           const token = jwt.sign(
-            { u_id: user.data.u_id },
+            { u_id: user.data.u_id, u_is_admin: user.data.u_is_admin },
             process.env.JWT_SECRET,
             {
               expiresIn: 300,

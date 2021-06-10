@@ -13,6 +13,7 @@ const { changeLName } = require("../users/changeLName.js");
 const { changeEmail } = require("../users/changeEmail.js");
 const { changeTel } = require("../users/changeTel.js");
 const { changePassword } = require("../users/changePassword.js");
+const { getUsersRecipes } = require("../users/getUsersRecipes.js");
 const { pool } = require("../db-config");
 const { verifyJWT } = require("./verifyJWT.js");
 
@@ -32,5 +33,6 @@ changeLName(usersRouter, pool, verifyJWT);
 changeEmail(usersRouter, pool, verifyJWT);
 changeTel(usersRouter, pool, verifyJWT);
 changePassword(usersRouter, pool, verifyJWT);
+getUsersRecipes(usersRouter, pool, verifyJWT);
 
 exports.usersRouter = usersRouter;

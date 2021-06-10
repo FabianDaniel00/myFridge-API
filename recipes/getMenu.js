@@ -7,7 +7,6 @@ const getMenu = (usersRouter, pool, verifyJWT) => {
 
         const GET_MENU = `
           SELECT
-            menus.m_id,
             menus.day,
             menus.r_id,
             recipes.r_pic,
@@ -18,7 +17,7 @@ const getMenu = (usersRouter, pool, verifyJWT) => {
           INNER JOIN recipes ON recipes.r_id = menus.r_id
           INNER JOIN r_categories ON r_categories.r_cat_id = recipes.r_cat_id
           WHERE
-            menus.u_id = ? AND recipes.r_accepted = 1 AND recipes.r_deleted = 0;
+            menus.u_id = ? AND recipes.r_accepted = 1 AND recipes.r_deleted = 0 AND menus.is_active = 1;
         `;
         pool.query(GET_MENU, user.data.u_id, (err, result) => {
           if (err) {

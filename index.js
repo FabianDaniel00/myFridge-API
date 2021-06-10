@@ -39,6 +39,8 @@ const { usersRouter } = require("./routes/users.js");
 app.use("/users", usersRouter);
 const { recipesRouter } = require("./routes/recipes.js");
 app.use("/recipes", recipesRouter);
+const { adminRouter } = require("./routes/admin.js");
+app.use("/admin", adminRouter);
 
 const { testRouter } = require("./routes/test.js");
 app.use("/test", testRouter);

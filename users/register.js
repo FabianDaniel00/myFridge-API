@@ -40,7 +40,7 @@ const register = (usersRouter, pool) => {
       return res.json({ err: "Can not be empty data!" });
     } else if (!validEmail) {
       return res.json({ err: "Not valid email!" });
-    } else if (!validPhone) {
+    } else if (tel && !validPhone) {
       return res.json({ err: "Not valid phone!" });
     } else if (!validPassword) {
       return res.json({
@@ -65,7 +65,7 @@ const register = (usersRouter, pool) => {
             } else {
               const verification_code = uuidv4().substring(0, 8);
               const REGISTER_USER =
-                "INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
               pool.query(
                 REGISTER_USER,
                 [
@@ -83,6 +83,7 @@ const register = (usersRouter, pool) => {
                   moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
                   moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
                   null,
+                  false,
                 ],
                 (register_err, register_result) => {
                   if (register_err) {

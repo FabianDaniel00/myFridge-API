@@ -8,18 +8,25 @@ const addComment = (recipesRouter, pool, verifyJWT) => {
         const newToken = req.newToken;
         const { comment, r_comment_id, r_id, u_id } = req.body;
 
-        const CHECK_IS_COMMENTED =
-          "SELECT r_comment_id FROM r_comments WHERE r_id = ? AND u_id = ? AND r_comment_deleted = 0 AND r_comment_accepted != -1;";
-        pool.query(CHECK_IS_COMMENTED, [r_id, u_id], (cErr, cResult) => {
-          if (cErr) {
-            console.log(cErr.message);
-          } else if (cResult.length) {
-            return res.json({
-              err: "You already commented on this recipe! If you don't see your comment please wait for admin to accept it.",
-            });
-          } else {
-            if (!comment || !r_comment_id || !r_id || !u_id) {
-              return res.json({ err: "Can not be empty data!" });
+        if (!comment || !r_comment_id || !r_id || !u_id) {
+          return res.json({ err: "Can not be empty data!" });
+        } else {
+          const CHECK_IS_COMMENTED =
+            "SELECT r_comment_id, r_comment_accepted FROM r_comments WHERE r_id = ? AND u_id = ? AND r_comment_deleted = 0;";
+          pool.query(CHECK_IS_COMMENTED, [r_id, u_id], (cErr, cResult) => {
+            if (cErr) {
+              console.log(cErr.message);
+            } else if (cResult.length) {
+              if (cResult[0].r_comment_accepted === -1) {
+                return res.json({
+                  err: "You already commented on this recipe! Please wait for admin to accept it.",
+                });
+              } else {
+                return res.json({
+                  err: "You already commented on this recipe.",
+                  commentId: cResult[0].r_comment_id,
+                });
+              }
             } else {
               const ADD_COMMENT =
                 "INSERT INTO r_comments (r_comment_id, r_comment, r_id, u_id, r_comment_created_at, r_comment_modified_at, r_comment_deleted) VALUES (?, ?, ?, ?, ?, ?, ?);";
@@ -50,8 +57,8 @@ const addComment = (recipesRouter, pool, verifyJWT) => {
                 }
               );
             }
-          }
-        });
+          });
+        }
       } else {
         return res.json({ err: "Something went wrong during authentication." });
       }

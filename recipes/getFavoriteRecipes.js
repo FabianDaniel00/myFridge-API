@@ -16,7 +16,7 @@ const getFavoriteRecipes = (recipesRouter, pool, verifyJWT) => {
               (
               SELECT
                   SUM(
-                      groceries.g_price * ingredients.g_quantity
+                      groceries.g_price * IF(groceries.g_quantity_type = 'g', ingredients.g_quantity / 1000, ingredients.g_quantity)
                   )
               FROM
                   recipes
@@ -24,35 +24,35 @@ const getFavoriteRecipes = (recipesRouter, pool, verifyJWT) => {
               INNER JOIN groceries ON groceries.g_id = ingredients.g_id
               WHERE
                   recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
-          ) AS price,
-          (
-            SELECT
-                AVG(r_ratings.rating)
-            FROM
-                recipes
-            INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
-            WHERE
-                recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
-        ) AS rating,
-        (
-            SELECT
-                COUNT(r_ratings.r_id)
-            FROM
-                recipes
-            INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
-            WHERE
-                recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
-        ) AS ratings_count
-          FROM
-              fav_recipes
-          INNER JOIN recipes ON recipes.r_id = fav_recipes.r_id
-          INNER JOIN users ON users.u_id = recipes.u_id
-          INNER JOIN r_categories ON r_categories.r_cat_id = recipes.r_cat_id
-          WHERE
-              recipes.r_accepted = 1 AND recipes.r_deleted = 0 AND fav_recipes.is_favorite = 1 AND fav_recipes.u_id = ?
-          ORDER BY
-              rating
-          DESC
+              ) AS price,
+              (
+              SELECT
+                  AVG(r_ratings.rating)
+              FROM
+                  recipes
+              INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
+              WHERE
+                  recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
+              ) AS rating,
+              (
+                  SELECT
+                      COUNT(r_ratings.r_id)
+                  FROM
+                      recipes
+                  INNER JOIN r_ratings ON r_ratings.r_id = recipes.r_id
+                  WHERE
+                      recipes.r_id = recipe_id AND recipes.r_accepted = 1 AND recipes.r_deleted = 0
+              ) AS ratings_count
+                FROM
+                    fav_recipes
+                INNER JOIN recipes ON recipes.r_id = fav_recipes.r_id
+                INNER JOIN users ON users.u_id = recipes.u_id
+                INNER JOIN r_categories ON r_categories.r_cat_id = recipes.r_cat_id
+                WHERE
+                    recipes.r_accepted = 1 AND recipes.r_deleted = 0 AND fav_recipes.is_favorite = 1 AND fav_recipes.u_id = ?
+                ORDER BY
+                    added_date
+                DESC
         `;
 
         pool.query(GET_FAVORITE_RECIPES, user.data.u_id, (err, result) => {
@@ -67,7 +67,29 @@ const getFavoriteRecipes = (recipesRouter, pool, verifyJWT) => {
               }
             }
 
-            return res.json({ favoriteRecipes: result, newToken });
+            const GET_DAYS_FROM_WEEKLY_MENU = `
+              SELECT
+                  day, r_id
+              FROM
+                  menus
+              WHERE is_active = 1 AND u_id = ?
+            `;
+            pool.query(
+              GET_DAYS_FROM_WEEKLY_MENU,
+              user.data.u_id,
+              (dErr, dResult) => {
+                if (dErr) {
+                  console.log(dErr.message);
+                  return res.json({ err: "Something went wrong" });
+                } else {
+                  return res.json({
+                    favoriteRecipes: result,
+                    daysFromWeeklyMenu: dResult,
+                    newToken,
+                  });
+                }
+              }
+            );
           }
         });
       } else {

@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 const favoriteRecipe = (recipesRouter, pool, verifyJWT) => {
   recipesRouter.post("/favorite_recipes", verifyJWT, (req, res) => {
     const user = req.session.user;
@@ -11,10 +13,14 @@ const favoriteRecipe = (recipesRouter, pool, verifyJWT) => {
           return res.json({ err: "Can not be empty data!" });
         } else {
           const UPDATE_FAVORITE_RECIPE =
-            "UPDATE fav_recipes SET is_favorite = !is_favorite WHERE r_id = ? AND u_id = ?;";
+            "UPDATE fav_recipes SET is_favorite = !is_favorite, added_date = ? WHERE r_id = ? AND u_id = ?;";
           pool.query(
             UPDATE_FAVORITE_RECIPE,
-            [r_id, user.data.u_id],
+            [
+              moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+              r_id,
+              user.data.u_id,
+            ],
             (uErr, uResult) => {
               if (uErr) {
                 console.log(uErr.message);
