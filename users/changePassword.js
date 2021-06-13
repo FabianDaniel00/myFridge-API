@@ -33,7 +33,7 @@ const changePassword = (usersRouter, pool, verifyJWT) => {
                   return res.json({ err: "Something went wrong" });
                 } else {
                   const EDIT_PASSWORD =
-                    "UPDATE users SET u_password = ? WHERE u_id = ? AND u_email = ?;";
+                    "UPDATE users SET u_password = ? WHERE u_id = ? AND u_email = ? AND u_is_deleted = 0 AND users.u_is_verified = 1 AND users.u_is_blocked = 0;";
                   pool.query(
                     EDIT_PASSWORD,
                     [encryptResult, user.data.u_id, user.data.u_email],

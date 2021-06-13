@@ -49,7 +49,7 @@ const getFavoriteRecipes = (recipesRouter, pool, verifyJWT) => {
                 INNER JOIN users ON users.u_id = recipes.u_id
                 INNER JOIN r_categories ON r_categories.r_cat_id = recipes.r_cat_id
                 WHERE
-                    recipes.r_accepted = 1 AND recipes.r_deleted = 0 AND fav_recipes.is_favorite = 1 AND fav_recipes.u_id = ?
+                    recipes.r_accepted = 1 AND recipes.r_deleted = 0 AND fav_recipes.is_favorite = 1 AND fav_recipes.u_id = ? AND users.u_is_deleted = 0 AND users.u_is_verified = 1 AND users.u_is_blocked = 0
                 ORDER BY
                     added_date
                 DESC

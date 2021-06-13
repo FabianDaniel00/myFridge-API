@@ -58,7 +58,7 @@ const getUsersRecipes = (usersRouter, pool, verifyJWT) => {
             INNER JOIN users ON users.u_id = recipes.u_id
             INNER JOIN r_categories ON r_categories.r_cat_id = recipes.r_cat_id
             WHERE
-                recipes.r_accepted = 1 AND recipes.r_deleted = 0 AND recipes.u_id = ?
+                recipes.r_accepted = 1 AND recipes.r_deleted = 0 AND recipes.u_id = ? AND u_is_deleted = 0 AND users.u_is_verified = 1 AND users.u_is_blocked = 0
             ORDER BY
                 r_created_at
             DESC;

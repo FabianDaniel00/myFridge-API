@@ -12,7 +12,7 @@ const changeLName = (usersRouter, pool, verifyJWT) => {
           return res.json({ err: "Please fill out all the fields!" });
         } else {
           const CHANGE_L_NAME =
-            "UPDATE users SET u_l_name = ?, u_monogram = ? WHERE u_id = ? AND u_email = ?;";
+            "UPDATE users SET u_l_name = ?, u_monogram = ? WHERE u_id = ? AND u_email = ? AND u_is_deleted = 0 AND users.u_is_verified = 1 AND users.u_is_blocked = 0;";
           pool.query(
             CHANGE_L_NAME,
             [lName, monogram, user.data.u_id, user.data.u_email],

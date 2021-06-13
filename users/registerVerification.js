@@ -6,11 +6,11 @@ const registerVerification = (usersRouter, pool) => {
       return res.json({ err: "Can not be empty data!" });
     } else {
       const VERIFY_USER =
-        "UPDATE users SET u_is_verified = ?, verification_code = ? WHERE u_email = ? AND verification_code = ?";
+        "UPDATE users SET u_is_verified = ?, verification_code = ? WHERE u_email = ? AND verification_code = ? AND u_is_deleted = 0";
 
       pool.query(
         VERIFY_USER,
-        [true, null, email, verificationCode],
+        [1, null, email, verificationCode],
         (err, result) => {
           if (err) {
             console.log(err.message);

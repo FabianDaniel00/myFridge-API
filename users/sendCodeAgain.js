@@ -9,7 +9,8 @@ const sendCodeAgain = (usersRouter, pool) => {
     if (!email || !password) {
       return res.json({ err: "Can not be empty data!" });
     } else {
-      const SELECT_USER = "SELECT * FROM users WHERE u_email = ?";
+      const SELECT_USER =
+        "SELECT * FROM users WHERE u_email = ? AND u_is_deleted = 0;";
 
       pool.query(SELECT_USER, email, (err, result) => {
         if (err) {
@@ -25,18 +26,17 @@ const sendCodeAgain = (usersRouter, pool) => {
             } else if (!same) {
               return res.json({ err: "Wrong email/password combination!" });
             } else {
+              const delayDuration = 5;
+              const delay = moment(
+                moment(result[0].verification_code_sent_date)
+                  .add(delayDuration, "minutes")
+                  .toDate(),
+                "YYYY-MM-DD HH:mm:ss"
+              );
+              const dateNow = moment(new Date(), "YYYY-MM-DD HH:mm:ss");
               if (result[0].u_is_verified) {
                 return res.json({ err: "This user is already verified." });
               } else if (delay > dateNow) {
-                const delayDuration = 5;
-                const delay = moment(
-                  moment(result[0].verification_code_sent_date)
-                    .add(delayDuration, "minutes")
-                    .toDate(),
-                  "YYYY-MM-DD HH:mm:ss"
-                );
-                const dateNow = moment(new Date(), "YYYY-MM-DD HH:mm:ss");
-
                 const difference = delay.diff(dateNow, "seconds");
                 return res.json({
                   err: `Sorry, you have to wait ${(
@@ -47,7 +47,7 @@ const sendCodeAgain = (usersRouter, pool) => {
                 });
               } else {
                 const REFRESH_SEND_DATE =
-                  "UPDATE users SET verification_code_sent_date = ? WHERE u_id = ?";
+                  "UPDATE users SET verification_code_sent_date = ? WHERE u_id = ? AND u_is_deleted = 0;";
                 pool.query(
                   REFRESH_SEND_DATE,
                   [

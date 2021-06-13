@@ -10,7 +10,8 @@ const resetPasswordSend = (usersRouter, pool) => {
     if (!email) {
       return res.json({ err: "Can not be empty data!" });
     } else {
-      const SELECT_USER = "SELECT * FROM users WHERE u_email = ?";
+      const SELECT_USER =
+        "SELECT * FROM users WHERE u_email = ? AND u_is_deleted = 0";
 
       pool.query(SELECT_USER, email, (err, result) => {
         if (err) {
@@ -50,7 +51,7 @@ const resetPasswordSend = (usersRouter, pool) => {
                   .add(delayDuration, "minutes")
                   .format("YYYY-MM-DD HH:mm:ss");
                 const SET_CODE =
-                  "UPDATE users SET verification_code = ?, verification_code_sent_date = ?, u_reset_pass_expiration_date = ? WHERE u_id = ?";
+                  "UPDATE users SET verification_code = ?, verification_code_sent_date = ?, u_reset_pass_expiration_date = ? WHERE u_id = ? AND u_is_deleted = 0";
                 pool.query(
                   SET_CODE,
                   [

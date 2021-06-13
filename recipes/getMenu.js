@@ -1,5 +1,5 @@
-const getMenu = (usersRouter, pool, verifyJWT) => {
-  usersRouter.get("/r/r/r/get_menu", verifyJWT, (req, res) => {
+const getMenu = (recipesRouter, pool, verifyJWT) => {
+  recipesRouter.get("/r/r/r/get_menu", verifyJWT, (req, res) => {
     const user = req.session.user;
     if (user) {
       if (req.u_id === user.data.u_id) {

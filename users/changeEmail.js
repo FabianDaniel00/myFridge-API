@@ -19,7 +19,7 @@ const changeEmail = (usersRouter, pool, verifyJWT) => {
           return res.json({ err: "Not valid email!" });
         } else {
           const CHECK_EMAIL_IS_EXIST =
-            "SELECT u_id FROM users WHERE u_email = ?";
+            "SELECT u_id FROM users WHERE u_email = ? AND u_is_deleted = 0";
           pool.query(CHECK_EMAIL_IS_EXIST, email, (cErr, cResult) => {
             if (cErr) {
               console.log(cErr.message);
@@ -38,7 +38,7 @@ const changeEmail = (usersRouter, pool, verifyJWT) => {
                     return res.json({ err: "Wrong password!" });
                   } else {
                     const CHANGE_EMAIL =
-                      "UPDATE users SET u_email = ? WHERE u_id = ? AND u_password = ?;";
+                      "UPDATE users SET u_email = ? WHERE u_id = ? AND u_password = ? AND u_is_deleted = 0 AND users.u_is_verified = 1 AND users.u_is_blocked = 0;";
                     pool.query(
                       CHANGE_EMAIL,
                       [email, user.data.u_id, user.data.u_password],

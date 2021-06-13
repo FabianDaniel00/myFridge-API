@@ -14,6 +14,7 @@ const { changeEmail } = require("../users/changeEmail.js");
 const { changeTel } = require("../users/changeTel.js");
 const { changePassword } = require("../users/changePassword.js");
 const { getUsersRecipes } = require("../users/getUsersRecipes.js");
+const { searchUsersData } = require("../users/searchUsersData.js");
 const { pool } = require("../db-config");
 const { verifyJWT } = require("./verifyJWT.js");
 
@@ -34,5 +35,6 @@ changeEmail(usersRouter, pool, verifyJWT);
 changeTel(usersRouter, pool, verifyJWT);
 changePassword(usersRouter, pool, verifyJWT);
 getUsersRecipes(usersRouter, pool, verifyJWT);
+searchUsersData(usersRouter, pool, verifyJWT);
 
 exports.usersRouter = usersRouter;

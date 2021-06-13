@@ -1,5 +1,5 @@
-const addToWeeklyMenu = (usersRouter, pool, verifyJWT) => {
-  usersRouter.post("/add_to_weekly_menu", verifyJWT, (req, res) => {
+const addToWeeklyMenu = (recipesRouter, pool, verifyJWT) => {
+  recipesRouter.post("/add_to_weekly_menu", verifyJWT, (req, res) => {
     const user = req.session.user;
     if (user) {
       if (req.u_id === user.data.u_id) {
@@ -7,7 +7,13 @@ const addToWeeklyMenu = (usersRouter, pool, verifyJWT) => {
 
         const { r_id, day } = req.body;
 
-        if (!r_id || !day) {
+        if (
+          !r_id ||
+          day === null ||
+          day === undefined ||
+          day === "" ||
+          parseInt(day) === NaN
+        ) {
           return res.json({ err: "Missing parameters..." });
         } else {
           const CHECK_DAY =
