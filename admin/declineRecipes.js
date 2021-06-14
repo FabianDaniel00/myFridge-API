@@ -57,7 +57,8 @@ const sendEmail = (fName, lName, r_name, email, res) => {
     from: process.env.EMAIL,
     to: email,
     subject: "myFridge Recipe",
-    html: `
+    html:
+      `
       <html>
         <head></head>
         <body style="position: relative; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif">
@@ -71,7 +72,9 @@ const sendEmail = (fName, lName, r_name, email, res) => {
             <br />
             <span>
               Click here to continue:
-              <a href="http://localhost:3000"
+              <a href="` +
+      `${process.env.APP_HOST}` +
+      `"
                 target="_blank">myFridge.com</a>
             </span>
           </div>

@@ -17,8 +17,8 @@ const sendEmailCode = (
     },
   });
 
-  let registerVerificationLink = "http://localhost:3000/register_verification";
-  let resetVerificationLink = "http://localhost:3000/reset_password";
+  let registerVerificationLink = `${process.env.APP_HOST}/register_verification`;
+  let resetVerificationLink = `${process.env.APP_HOST}/reset_password`;
 
   if (isVerification) {
     resetVerificationLink = "";
