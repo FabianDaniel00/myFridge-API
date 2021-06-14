@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-require("dotenv").config();
+// require("dotenv").config();
 
 const blockUser = (adminRouter, pool, verifyJWT) => {
   adminRouter.post("/block_user", verifyJWT, (req, res) => {

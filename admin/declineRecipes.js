@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-require("dotenv").config();
+// require("dotenv").config();
 
 const declineRecipe = (adminRouter, pool, verifyJWT) => {
   adminRouter.post("/decline_recipe", verifyJWT, (req, res) => {
