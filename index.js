@@ -45,6 +45,6 @@ app.use("/admin", adminRouter);
 const { testRouter } = require("./routes/test.js");
 app.use("/test", testRouter);
 
-app.listen(process.env.API_PORT, () => {
-  console.log(`myFridge API is listening on port ${process.env.API_PORT}...`);
+app.listen(process.env.PORT, () => {
+  console.log(`myFridge API is listening on port ${process.env.PORT}...`);
 });

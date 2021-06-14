@@ -1,7 +1,7 @@
 const { sendEmailCode } = require("./sendEmailCode.js");
 const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 const resetPasswordSend = (usersRouter, pool) => {
   usersRouter.post("/reset_password_send", (req, res) => {

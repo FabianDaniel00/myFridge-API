@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 const changePassword = (usersRouter, pool, verifyJWT) => {
   usersRouter.post("/edit_password", verifyJWT, (req, res) => {

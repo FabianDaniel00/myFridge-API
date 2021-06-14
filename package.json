@@ -2,12 +2,18 @@
   "name": "myFridge-API",
   "version": "1.0.0",
   "main": "index.js",
+
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \nError: no test specified\" && exit 1"
+  },
+
   "repository": "https://github.com/FabianDaniel00/myFridge-API.git",
   "author": "Fabian Daniel <kiloboggaming@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.21.1",
-    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",

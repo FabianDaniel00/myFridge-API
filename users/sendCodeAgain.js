@@ -1,6 +1,6 @@
 const { sendEmailCode } = require("./sendEmailCode.js");
 const moment = require("moment");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 const sendCodeAgain = (usersRouter, pool) => {
   usersRouter.post("/send_code_again", (req, res) => {

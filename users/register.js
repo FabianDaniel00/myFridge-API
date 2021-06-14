@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 const { sendEmailCode } = require("./sendEmailCode.js");
