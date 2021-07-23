@@ -15,7 +15,7 @@ const getGroceries = (recipesRouter, pool, verifyJWT) => {
                 my_fridge
             INNER JOIN groceries ON groceries.g_id = my_fridge.g_id
             WHERE
-                my_fridge.u_id = ?;
+                my_fridge.u_id = ? AND groceries.g_is_deleted = 0;
           `;
 
         pool.query(GET_CONTAIN_GROCERIES, user.data.u_id, (err, result) => {

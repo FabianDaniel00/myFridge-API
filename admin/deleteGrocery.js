@@ -1,5 +1,5 @@
-const deleteUser = (adminRouter, pool, verifyJWT) => {
-  adminRouter.post("/delete_user", verifyJWT, (req, res) => {
+const deleteGrocery = (adminRouter, pool, verifyJWT) => {
+  adminRouter.post("/delete_grocery", verifyJWT, (req, res) => {
     const user = req.session.user;
     if (user) {
       if (
@@ -8,15 +8,15 @@ const deleteUser = (adminRouter, pool, verifyJWT) => {
       ) {
         const newToken = req.newToken;
 
-        const { u_id } = req.body;
+        const { g_id } = req.body;
 
-        if (!u_id) {
+        if (!g_id) {
           return res.json({ err: "Missing parameters..." });
         } else {
-          const DELETE_USER =
-            "UPDATE users SET u_is_deleted = 1 WHERE u_id = ?";
+          const DELETE_GROCERY =
+            "UPDATE groceries SET g_is_deleted = 1 WHERE g_id = ?";
 
-          pool.query(DELETE_USER, u_id, (err, result) => {
+          pool.query(DELETE_GROCERY, g_id, (err, result) => {
             if (err) {
               console.log(err.message);
               return res.json({ err: "Something went wrong." });
@@ -24,7 +24,7 @@ const deleteUser = (adminRouter, pool, verifyJWT) => {
               return res.json({ err: "Something went wrong." });
             } else {
               return res.json({
-                message: "User successfully deleted!",
+                message: "Grocery successfully deleted!",
                 newToken,
               });
             }
@@ -41,4 +41,4 @@ const deleteUser = (adminRouter, pool, verifyJWT) => {
   });
 };
 
-exports.deleteUser = deleteUser;
+exports.deleteGrocery = deleteGrocery;

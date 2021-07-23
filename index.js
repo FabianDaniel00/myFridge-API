@@ -6,7 +6,7 @@ const session = require("express-session");
 
 const app = express();
 
-// require("dotenv").config();
+require("dotenv").config();
 
 app.use(express.json({ limit: "5mb" }));
 app.use(

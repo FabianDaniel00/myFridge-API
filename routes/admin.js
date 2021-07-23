@@ -8,6 +8,12 @@ const { getUsers } = require("../admin/getUsers.js");
 const { blockUser } = require("../admin/blockUser.js");
 const { unBlockUser } = require("../admin/unBlockUser.js");
 const { deleteUser } = require("../admin/deleteUser.js");
+const { getGroceries } = require("../admin/getGroceries.js");
+const { deleteGrocery } = require("../admin/deleteGrocery.js");
+const { getGCategories } = require("../admin/getGCategories.js");
+const { editGrocery } = require("../admin/editGrocery.js");
+const { addGrocery } = require("../admin/addGrocery.js");
+const { makeAdminUser } = require("../admin/makeAdminUser.js");
 const { pool } = require("../db-config");
 const { verifyJWT } = require("./verifyJWT.js");
 
@@ -24,5 +30,11 @@ getUsers(adminRouter, pool, verifyJWT);
 blockUser(adminRouter, pool, verifyJWT);
 unBlockUser(adminRouter, pool, verifyJWT);
 deleteUser(adminRouter, pool, verifyJWT);
+getGroceries(adminRouter, pool, verifyJWT);
+deleteGrocery(adminRouter, pool, verifyJWT);
+getGCategories(adminRouter, pool, verifyJWT);
+editGrocery(adminRouter, pool, verifyJWT);
+addGrocery(adminRouter, pool, verifyJWT);
+makeAdminUser(adminRouter, pool, verifyJWT);
 
 exports.adminRouter = adminRouter;

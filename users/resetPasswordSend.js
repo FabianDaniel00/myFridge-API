@@ -79,10 +79,6 @@ const resetPasswordSend = (usersRouter, pool) => {
                         res,
                         false
                       );
-                      console.log(`The code was sent to ${email}`);
-                      return res.json({
-                        message: `The code was sent to ${email}, will expire in 10 minutes`,
-                      });
                     }
                   }
                 );

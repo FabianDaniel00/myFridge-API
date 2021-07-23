@@ -21,7 +21,8 @@ const getCommentsToAccept = (adminRouter, pool, verifyJWT) => {
           INNER JOIN users ON users.u_id = r_comments.u_id
           INNER JOIN recipes ON recipes.r_id = r_comments.r_id
           WHERE
-            r_comments.r_comment_accepted = -1`;
+            r_comments.r_comment_accepted = -1
+          ORDER BY CONCAT(users.u_f_name, ' ', users.u_l_name) ASC`;
 
         pool.query(GET_COMMENTS_TO_ACCEPT, (err, result) => {
           if (err) {

@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-// require("dotenv").config();
+require("dotenv").config();
 
 const declineComment = (adminRouter, pool, verifyJWT) => {
   adminRouter.post("/decline_comment", verifyJWT, (req, res) => {
@@ -35,8 +35,16 @@ const declineComment = (adminRouter, pool, verifyJWT) => {
             } else if (!result.affectedRows) {
               return res.json({ err: "Something went wrong." });
             } else {
-              sendEmail(fName, lName, r_name, email, r_comment, r_id, res);
-              return res.json({ message: "Successfully declined!", newToken });
+              sendEmail(
+                fName,
+                lName,
+                r_name,
+                email,
+                r_comment,
+                r_id,
+                res,
+                newToken
+              );
             }
           });
         }
@@ -53,7 +61,16 @@ const declineComment = (adminRouter, pool, verifyJWT) => {
 
 exports.declineComment = declineComment;
 
-const sendEmail = (fName, lName, r_name, email, r_comment, r_id, res) => {
+const sendEmail = (
+  fName,
+  lName,
+  r_name,
+  email,
+  r_comment,
+  r_id,
+  res,
+  newToken
+) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -76,7 +93,7 @@ const sendEmail = (fName, lName, r_name, email, r_comment, r_id, res) => {
             <div style="height: 5px; background-color: #fff"></div>
           </div>
           <div style="padding: 50px 0 100px 0; text-align: center;">
-            <h2>Dear ${fName} ${lName}, your comment <i style="color: #595959">${r_comment}</i> was declined on recipe <a href="http://localhost:3000/recipe/${r_id}" target="_blank">${r_name}</a>.</h2>
+            <h2>Dear ${fName} ${lName}, your comment <i style="color: #595959">${r_comment}</i> was declined on recipe <a href="${process.env.APP_HOST}/recipe/${r_id}" target="_blank">${r_name}</a>.</h2>
             <br />
             <br />
             <span>
@@ -100,10 +117,11 @@ const sendEmail = (fName, lName, r_name, email, r_comment, r_id, res) => {
     if (email_err) {
       console.log(email_err.message);
       return res.json({
-        err: "The email was not sent for some reason.",
+        err: "The email was not sent for some reason but the comment was declined.",
       });
     } else {
       console.log(`Email sent to ${email}`);
+      return res.json({ message: "Successfully declined!", newToken });
     }
   });
 };

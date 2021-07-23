@@ -28,7 +28,7 @@ const addRecipe = (recipesRouter, pool, verifyJWT) => {
         if (!r_id || !r_name || !r_description || !r_cat_id) {
           return res.json({ err: "Please check out all the fields!" });
         } else if (ingredients.length <= 1) {
-          return res.json({ err: "You have to add 2 or more ingredients!" });
+          return res.json({ err: "You have to add at least 2 ingredients!" });
         } else if (
           Math.round(picSize / 1024) >= 4096 &&
           (contentType !== "image/png" ||

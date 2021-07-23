@@ -1,11 +1,19 @@
 const getFavoriteRecipes = (recipesRouter, pool, verifyJWT) => {
-  recipesRouter.get("/r/r/r/get_favorite_recipes", verifyJWT, (req, res) => {
-    const user = req.session.user;
-    if (user) {
-      if (req.u_id === user.data.u_id) {
-        const newToken = req.newToken;
+  recipesRouter.get(
+    "/r/r/r/get_favorite_recipes/:search",
+    verifyJWT,
+    (req, res) => {
+      const user = req.session.user;
+      if (user) {
+        if (req.u_id === user.data.u_id) {
+          const newToken = req.newToken;
 
-        const GET_FAVORITE_RECIPES = `
+          const { search } = req.params;
+
+          if (!search) {
+            return res.json({ err: "Missing parameters..." });
+          } else {
+            const GET_FAVORITE_RECIPES = `
           SELECT
               fav_recipes.r_id AS recipe_id,
               recipes.r_name,
@@ -49,56 +57,70 @@ const getFavoriteRecipes = (recipesRouter, pool, verifyJWT) => {
                 INNER JOIN users ON users.u_id = recipes.u_id
                 INNER JOIN r_categories ON r_categories.r_cat_id = recipes.r_cat_id
                 WHERE
-                    recipes.r_accepted = 1 AND recipes.r_deleted = 0 AND fav_recipes.is_favorite = 1 AND fav_recipes.u_id = ? AND users.u_is_deleted = 0 AND users.u_is_verified = 1 AND users.u_is_blocked = 0
+                    recipes.r_accepted = 1 AND recipes.r_deleted = 0
+                    AND fav_recipes.is_favorite = 1
+                    AND fav_recipes.u_id = ?
+                    AND users.u_is_deleted = 0
+                    AND users.u_is_verified = 1
+                    AND users.u_is_blocked = 0
+                    ${
+                      search === `all`
+                        ? ``
+                        : `AND recipes.r_name LIKE '%` + search + `%'`
+                    }
                 ORDER BY
                     added_date
                 DESC
         `;
 
-        pool.query(GET_FAVORITE_RECIPES, user.data.u_id, (err, result) => {
-          if (err) {
-            console.log(err.message);
-            return res.json({ err: "Something went wrong" });
-          } else {
-            for (const favoriteRecipe of result) {
-              if (favoriteRecipe.r_pic) {
-                const buf = new Buffer.from(favoriteRecipe.r_pic);
-                favoriteRecipe.r_pic = buf.toString("base64");
-              }
-            }
+            pool.query(GET_FAVORITE_RECIPES, user.data.u_id, (err, result) => {
+              if (err) {
+                console.log(err.message);
+                return res.json({ err: "Something went wrong" });
+              } else {
+                for (const favoriteRecipe of result) {
+                  if (favoriteRecipe.r_pic) {
+                    const buf = new Buffer.from(favoriteRecipe.r_pic);
+                    favoriteRecipe.r_pic = buf.toString("base64");
+                  }
+                }
 
-            const GET_DAYS_FROM_WEEKLY_MENU = `
+                const GET_DAYS_FROM_WEEKLY_MENU = `
               SELECT
                   day, r_id
               FROM
                   menus
               WHERE is_active = 1 AND u_id = ?
             `;
-            pool.query(
-              GET_DAYS_FROM_WEEKLY_MENU,
-              user.data.u_id,
-              (dErr, dResult) => {
-                if (dErr) {
-                  console.log(dErr.message);
-                  return res.json({ err: "Something went wrong" });
-                } else {
-                  return res.json({
-                    favoriteRecipes: result,
-                    daysFromWeeklyMenu: dResult,
-                    newToken,
-                  });
-                }
+                pool.query(
+                  GET_DAYS_FROM_WEEKLY_MENU,
+                  user.data.u_id,
+                  (dErr, dResult) => {
+                    if (dErr) {
+                      console.log(dErr.message);
+                      return res.json({ err: "Something went wrong" });
+                    } else {
+                      return res.json({
+                        favoriteRecipes: result,
+                        daysFromWeeklyMenu: dResult,
+                        newToken,
+                      });
+                    }
+                  }
+                );
               }
-            );
+            });
           }
-        });
+        } else {
+          return res.json({
+            err: "Something went wrong during authentication.",
+          });
+        }
       } else {
-        return res.json({ err: "Something went wrong during authentication." });
+        return res.json({ err: "There is no user signed in." });
       }
-    } else {
-      return res.json({ err: "There is no user signed in." });
     }
-  });
+  );
 };
 
 exports.getFavoriteRecipes = getFavoriteRecipes;

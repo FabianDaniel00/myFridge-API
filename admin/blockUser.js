@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-// require("dotenv").config();
+require("dotenv").config();
 
 const blockUser = (adminRouter, pool, verifyJWT) => {
   adminRouter.post("/block_user", verifyJWT, (req, res) => {
@@ -25,8 +25,7 @@ const blockUser = (adminRouter, pool, verifyJWT) => {
             } else if (!result.affectedRows) {
               return res.json({ err: "Something went wrong." });
             } else {
-              sendEmail(u_f_name, u_l_name, u_email, res);
-              return res.json({ message: "User blocked!", newToken });
+              sendEmail(u_f_name, u_l_name, u_email, res, newToken);
             }
           });
         }
@@ -43,7 +42,7 @@ const blockUser = (adminRouter, pool, verifyJWT) => {
 
 exports.blockUser = blockUser;
 
-const sendEmail = (fName, lName, email, res) => {
+const sendEmail = (fName, lName, email, res, newToken) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -90,10 +89,11 @@ const sendEmail = (fName, lName, email, res) => {
     if (email_err) {
       console.log(email_err.message);
       return res.json({
-        err: "The email was not sent for some reason.",
+        err: "The email was not sent for some reason but the user was blocked.",
       });
     } else {
       console.log(`Email sent to ${email}`);
+      return res.json({ message: "User blocked!", newToken });
     }
   });
 };

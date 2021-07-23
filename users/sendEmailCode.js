@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-// require("dotenv").config();
+require("dotenv").config();
 
 const sendEmailCode = (
   email,
@@ -80,11 +80,26 @@ const sendEmailCode = (
   transporter.sendMail(mailOptions, (email_err) => {
     if (email_err) {
       console.log(email_err.message);
-      return res.json({
-        err: "The email was not sent for some reason.",
-      });
+      if (isVerification) {
+        return res.json({
+          err: "The email was not sent for some reason but the verification code is generated.",
+        });
+      } else {
+        return res.json({
+          err: "The email was not sent for some reason but the user was registered.",
+        });
+      }
     } else {
-      console.log(`Email sent to ${email}`);
+      if (isVerification) {
+        return res.json({
+          message: `The code was sent to ${email}, will expire in 10 minutes`,
+        });
+      } else {
+        console.log(`Successful register, email: '${email}'`);
+        return res.json({
+          message: "Your verification code was sent to your e-mail.",
+        });
+      }
     }
   });
 };

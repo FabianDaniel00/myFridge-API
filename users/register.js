@@ -104,10 +104,6 @@ const register = (usersRouter, pool) => {
                       res,
                       true
                     );
-                    console.log(`Successful register, email: '${email}'`);
-                    return res.json({
-                      message: `Successful register as '${email}, your verification code was sent to your e-mail.'`,
-                    });
                   }
                 }
               );

@@ -20,7 +20,7 @@ const searchGroceries = (recipesRouter, pool, verifyJWT) => {
                 groceries g,
                 g_categories cat
             WHERE
-                g.g_cat_id = cat.g_cat_id AND g.g_name LIKE ?
+                g.g_cat_id = cat.g_cat_id AND g.g_name LIKE ? AND g.g_is_deleted = 0
             GROUP BY
                 g.g_id
           `;

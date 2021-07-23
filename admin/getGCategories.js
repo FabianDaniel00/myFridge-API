@@ -1,5 +1,5 @@
-const getRecipesToAccept = (adminRouter, pool, verifyJWT) => {
-  adminRouter.get("/get_recipes_to_accept", verifyJWT, (req, res) => {
+const getGCategories = (adminRouter, pool, verifyJWT) => {
+  adminRouter.get("/get_g_categories", verifyJWT, (req, res) => {
     const user = req.session.user;
     if (user) {
       if (
@@ -8,15 +8,15 @@ const getRecipesToAccept = (adminRouter, pool, verifyJWT) => {
       ) {
         const newToken = req.newToken;
 
-        const GET_RECIPES_TO_ACCEPT =
-          "SELECT r_name, r_id FROM recipes WHERE r_accepted = -1 ORDER BY r_name ASC";
+        const GET_G_CATEGORIES =
+          "SELECT g_cat_id, g_cat_name FROM g_categories;";
 
-        pool.query(GET_RECIPES_TO_ACCEPT, (err, result) => {
+        pool.query(GET_G_CATEGORIES, (err, result) => {
           if (err) {
             console.log(err.message);
             return res.json({ err: "Something went wrong." });
           } else {
-            return res.json({ recipes: result, newToken });
+            return res.json({ categories: result, newToken });
           }
         });
       } else {
@@ -30,4 +30,4 @@ const getRecipesToAccept = (adminRouter, pool, verifyJWT) => {
   });
 };
 
-exports.getRecipesToAccept = getRecipesToAccept;
+exports.getGCategories = getGCategories;

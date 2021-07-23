@@ -13,8 +13,7 @@ const getDataForChart = (recipesRouter, pool, verifyJWT) => {
                 used_groceries
             INNER JOIN groceries ON groceries.g_id = used_groceries.g_id
             WHERE
-                used_groceries.added_date BETWEEN(
-                    CURRENT_DATE() - INTERVAL 1 MONTH) AND CURRENT_DATE() AND used_groceries.u_id = ?
+                used_groceries.added_date >= (NOW() - INTERVAL 1 MONTH) AND used_groceries.u_id = ?
             GROUP BY
                 groceries.g_name
             ORDER BY grocery_count DESC;
